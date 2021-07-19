@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * @author ahlin hamberg
  */
-public class PushaController {
+public class PushController {
 
 
     private static String comepetition = "{}";
@@ -21,13 +21,13 @@ public class PushaController {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public enum puchStatus {
+    public enum pushStatus {
         UNKNOWN_ERROR,
         IO_ERROR,
         SUCCESSFULLY
     }
 
-    private puchStatus puchCompetition(Tävling competition, String serverSokvag, String competitionName) {
+     public pushStatus pushCompetition(Tävling competition, String serverSokvag, String competitionName) {
 
         try {
             String comeptitionTemp = competition.getJsonString();
@@ -46,13 +46,13 @@ public class PushaController {
         } catch (IOException e) {
 //            PushInfo.appendText("Gick inte att pusha prova ändra sökvögen eller liknande lycka till ");
             e.printStackTrace();
-            return puchStatus.IO_ERROR;
+            return pushStatus.IO_ERROR;
         } catch (Exception e) {
             e.printStackTrace();
-            return puchStatus.UNKNOWN_ERROR;
+            return pushStatus.UNKNOWN_ERROR;
         }
 //        PushInfo.appendText("Automatiskt puschat tävlingen (" + LocalDateTime.now().format(formatter) + ") \n");
-        return puchStatus.SUCCESSFULLY;
+        return pushStatus.SUCCESSFULLY;
 //		if(competitionName.getText().isEmpty()){
 //			showAlertInformation("Error", "\"Competition name\" måstet vara ifyllt.", "\"Competition name\" måstet vara ifyllt. Fyll i och försök igen.");
 //		}

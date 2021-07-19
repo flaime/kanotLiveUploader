@@ -1,4 +1,4 @@
-package hjälpprogram;
+package kanotLiveUploader.utils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
