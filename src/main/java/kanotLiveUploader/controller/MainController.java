@@ -45,6 +45,9 @@ public class MainController {
     @FXML
     TextField competitionName;
 
+    TextField url = new TextField("https://kanot.live");
+    TextField updateringsinteervall = new TextField("30");
+
     private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final FileChooser fileChooser = new FileChooser();
@@ -60,7 +63,9 @@ public class MainController {
                 databaseUrl,
                 start,
                 stop,
-                competitionName
+                competitionName,
+                url,
+                updateringsinteervall
         ));
 
         saveController = new SaveController(toSave);
@@ -80,6 +85,16 @@ public class MainController {
     private void runMainLoop() {
 
         long timeBetweenExecution = 30000;
+        try {
+            long seconds = Long.parseLong(updateringsinteervall.getText());
+            timeBetweenExecution = seconds * 1000L;
+        } catch (NumberFormatException e) {
+            System.out.println("Cant read the timeBetweenExecution from the data " + updateringsinteervall.getText());
+            showAlertInformation("Kan inte läsa uppdaterings tiden","Kan inte läsa uppdaterings tiden","Kan inte läsa uppdaterings tiden, den återställs till 30 sec");
+            updateringsinteervall.setText("30");
+        }
+
+        long finalTimeBetweenExecution = timeBetweenExecution;
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -87,7 +102,7 @@ public class MainController {
                     System.out.println("Running: " + new java.util.Date());
                     readDatabase();
                     pushDatabase();
-                    Date executionTime = new Date(this.scheduledExecutionTime() + timeBetweenExecution);
+                    Date executionTime = new Date(this.scheduledExecutionTime() + finalTimeBetweenExecution);
                     Platform.runLater(() -> {
                         status.setText("Klar, nästa läsning och push är: " + DATE_FORMAT.format(executionTime));
                     });
@@ -183,5 +198,31 @@ public class MainController {
         alert.setContentText(content);
 
         alert.showAndWait();
+    }
+
+
+    @FXML
+    private void selectUrl() {
+        inputPopup("Ny URL", "Uppdatera URL för puch", "Skriv in URL att pusha till: ", url);
+    }
+
+    @FXML
+    private void selectUpdateInterval() {
+        inputPopup("Ny update-interval", "Uppdatera intervallen för inläsning och puch. Notera att efter denna ändringar måste programmet startas om för att det ska ta kraft", "Skriv in tiden i sekunder och enbart siffror:", updateringsinteervall);
+    }
+
+
+    private void inputPopup(String title, String header, String content, TextField toUpdate) {
+        TextInputDialog dialog = new TextInputDialog(toUpdate.getText());
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+
+        Optional<String> result = dialog.showAndWait();
+
+        result.ifPresent(newValue -> {
+            System.out.println(toUpdate.getText() + " is update to: " + newValue);
+            toUpdate.setText(newValue);
+        });
     }
 }
