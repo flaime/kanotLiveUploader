@@ -1,5 +1,6 @@
 package kanotLiveUploader.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -28,9 +29,9 @@ public class MainController {
     }
 
     @FXML
-    TextField status;
+    Label status;
     @FXML
-    TextField lastUpdated;
+    Label lastUpdated;
     @FXML
     TextField databaseUrl;
     @FXML
@@ -43,6 +44,8 @@ public class MainController {
     Button readDatabase;
     @FXML
     TextField competitionName;
+
+    private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final FileChooser fileChooser = new FileChooser();
     private final PushController pushController = new PushController();
@@ -84,8 +87,10 @@ public class MainController {
                     System.out.println("Running: " + new java.util.Date());
                     readDatabase();
                     pushDatabase();
-                    Date executionTime = new Date(this.scheduledExecutionTime()+ timeBetweenExecution);
-                    status.setText("Klar, nästa läsnig och push är: " + executionTime);
+                    Date executionTime = new Date(this.scheduledExecutionTime() + timeBetweenExecution);
+                    Platform.runLater(() -> {
+                        status.setText("Klar, nästa läsning och push är: " + DATE_FORMAT.format(executionTime));
+                    });
                 }
             }
         }, 0, timeBetweenExecution);
@@ -97,8 +102,8 @@ public class MainController {
 
     @FXML
     private void start() {
-        if(competitionName.getText().isEmpty()){
-            showAlertInformation("Saknar tävlingens namn","Saknar tävlingens namn", "För att kunna starta kräver namnet på tävlignen skriv in det innan du startar.");
+        if (competitionName.getText().isEmpty()) {
+            showAlertInformation("Saknar tävlingens namn", "Saknar tävlingens namn", "För att kunna starta kräver namnet på tävlignen skriv in det innan du startar.");
             start.setSelected(false);
         } else {
             runLoop = true;
@@ -150,14 +155,19 @@ public class MainController {
             pdb = new ParseDatabasToTävling(databasFile.getAbsolutePath());
 
         }
-        status.setText("Loading database");
+        Platform.runLater(() -> {
+            status.setText("Loading database");
+        });
         tävling = pdb.parserDatbas();
         raceData.setText(formatJson(tävling.getJsonString()));
-        status.setText("Done loading database");
+        Platform.runLater(() -> {
+            status.setText("Done loading database");
+        });
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        lastUpdated.setText(dateFormat.format(date));
+        Platform.runLater(() -> {
+            lastUpdated.setText(DATE_FORMAT.format(date));
+        });
     }
 
     public void endProgram() {
