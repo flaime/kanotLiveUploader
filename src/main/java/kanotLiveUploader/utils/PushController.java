@@ -20,6 +20,10 @@ public class PushController {
     private LocalDateTime nextForcePush = LocalDateTime.now();
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    GuiLogger logger;
+    public PushController(GuiLogger logger) {
+        this.logger = logger;
+    }
 
     public enum pushStatus {
         UNKNOWN_ERROR,
@@ -34,7 +38,7 @@ public class PushController {
             String clubsTemp = competition.getClubJson();
 
             if ((comepetition.equalsIgnoreCase(comeptitionTemp) && clubs.equalsIgnoreCase(clubsTemp)) && nextForcePush.isAfter(LocalDateTime.now())) {
-//                        PushInfo.appendText("The data is identical ignore push and waits for next time (next force pusch is " + nextForcePush + "");
+                log("The data is identical ignore push and waits for next time (next force pusch is " + nextForcePush + "");
                 System.out.println("comepetition: " + comepetition);
             } else {
                 nextForcePush = LocalDateTime.now().plusMinutes(10);
@@ -44,14 +48,14 @@ public class PushController {
             }
 
         } catch (IOException e) {
-//            PushInfo.appendText("Gick inte att pusha prova ändra sökvögen eller liknande lycka till ");
+            log("Gick inte att pusha prova ändra sökvögen eller liknande lycka till ");
             e.printStackTrace();
             return pushStatus.IO_ERROR;
         } catch (Exception e) {
             e.printStackTrace();
             return pushStatus.UNKNOWN_ERROR;
         }
-//        PushInfo.appendText("Automatiskt puschat tävlingen (" + LocalDateTime.now().format(formatter) + ") \n");
+        log("Automatiskt puschat tävlingen (" + LocalDateTime.now().format(formatter) + ")");
         return pushStatus.SUCCESSFULLY;
 //		if(competitionName.getText().isEmpty()){
 //			showAlertInformation("Error", "\"Competition name\" måstet vara ifyllt.", "\"Competition name\" måstet vara ifyllt. Fyll i och försök igen.");
@@ -87,8 +91,12 @@ public class PushController {
         System.out.println("Response status: " + feedback.getHttpCode());
         System.out.println(feedback.getMessage());
 
-//		PushInfo.appendText("Sending 'POST' request to URL : " + puschUrl + "\n");
-//		PushInfo.appendText("Response Code : " + feedback.getHttpCode() + "\n");
-//		PushInfo.appendText("Response info : " + feedback.getMessage() + "\n");
+        log("Sending 'POST' request to URL : " + puschUrl);
+        log("Response Code : " + feedback.getHttpCode());
+        log("Response info : " + feedback.getMessage());
+    }
+
+    private void log(String message){
+        logger.logToGui(message);
     }
 }

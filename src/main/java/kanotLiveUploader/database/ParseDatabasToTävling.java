@@ -1,6 +1,7 @@
 package kanotLiveUploader.database;
 
 import kanotLiveUploader.paresePdf.*;
+import kanotLiveUploader.utils.GuiLogger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,6 +20,8 @@ public class ParseDatabasToTävling {
 	
 	private Tävling Tävling = null;
 	private DatabasConection db;
+
+	private GuiLogger logger;
 //	private LoadDatabasInformation logToOjekt = null;
 //	public ParseDatabasToTävling(String databasURL, LoadDatabasInformation logToOjekt) throws IllegalArgumentException{
 //	public ParseDatabasToTävling(String databasURL) throws IllegalArgumentException{
@@ -27,8 +30,9 @@ public class ParseDatabasToTävling {
 //		log("Database connection has been esatabilitch");
 //
 //	}
-	public ParseDatabasToTävling(String databasURL) throws IllegalArgumentException{
-		
+	public ParseDatabasToTävling(String databasURL, GuiLogger logger) throws IllegalArgumentException{
+
+		this.logger = logger;
 		Tävling Tävling = null;
 		try {
 			db = new DatabasConection(databasURL);
@@ -41,8 +45,8 @@ public class ParseDatabasToTävling {
 	}
 	
 	private void log(String message){
-//		if(logToOjekt != null)
-//			logToOjekt.addDatabasLoadInfo(message);
+		if(logger != null)
+			logger.logToGui(message);
 		System.out.println("Database load: " + message);
 	}
 		

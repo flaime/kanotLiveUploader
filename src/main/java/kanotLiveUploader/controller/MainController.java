@@ -7,6 +7,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import kanotLiveUploader.database.ParseDatabasToTävling;
 import kanotLiveUploader.paresePdf.Tävling;
+import kanotLiveUploader.utils.GuiLogger;
 import kanotLiveUploader.utils.PushController;
 import kanotLiveUploader.utils.SaveController;
 
@@ -18,7 +19,7 @@ import java.util.*;
 
 import static kanotLiveUploader.utils.JsonUtils.formatJson;
 
-public class MainController {
+public class MainController implements GuiLogger {
     private Stage primaryStage;
     private boolean runLoop = false;
     private Timer timer = new Timer();
@@ -44,6 +45,8 @@ public class MainController {
     Button readDatabase;
     @FXML
     TextField competitionName;
+    @FXML
+    TextArea guiLogField;
 
     TextField url = new TextField("https://kanot.live");
     TextField updateringsinteervall = new TextField("30");
@@ -51,7 +54,7 @@ public class MainController {
     private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final FileChooser fileChooser = new FileChooser();
-    private final PushController pushController = new PushController();
+    private final PushController pushController = new PushController(this);
     private File databasFile = null;
     private ParseDatabasToTävling pdb = null;
     SaveController saveController;
@@ -112,7 +115,7 @@ public class MainController {
     }
 
     private void pushDatabase() {
-//        pushController.pushCompetition(tävling, "https://kanot.live" ,competitionName.getText());
+        pushController.pushCompetition(tävling, url.getText() ,competitionName.getText());
     }
 
     @FXML
@@ -167,7 +170,7 @@ public class MainController {
         if (databasFile == null) {
 
         } else {
-            pdb = new ParseDatabasToTävling(databasFile.getAbsolutePath());
+            pdb = new ParseDatabasToTävling(databasFile.getAbsolutePath(), this);
 
         }
         Platform.runLater(() -> {
@@ -223,6 +226,16 @@ public class MainController {
         result.ifPresent(newValue -> {
             System.out.println(toUpdate.getText() + " is update to: " + newValue);
             toUpdate.setText(newValue);
+        });
+    }
+
+    @Override
+    public void logToGui(String message) {
+        Platform.runLater(() -> {
+            guiLogField.setText(
+                    DATE_FORMAT.format(new Date()) + " - " + message + "\n" +
+                    guiLogField.getText()
+            );
         });
     }
 }
