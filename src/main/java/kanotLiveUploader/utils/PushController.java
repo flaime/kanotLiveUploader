@@ -31,13 +31,19 @@ public class PushController {
         SUCCESSFULLY
     }
 
-     public pushStatus pushCompetition(Tävling competition, String serverSokvag, String competitionName) {
+    public pushStatus pushCompetition(Tävling competition, String serverSokvag, String competitionName, boolean forcePuch) {
 
         try {
             String comeptitionTemp = competition.getJsonString();
             String clubsTemp = competition.getClubJson();
 
-            if ((comepetition.equalsIgnoreCase(comeptitionTemp) && clubs.equalsIgnoreCase(clubsTemp)) && nextForcePush.isAfter(LocalDateTime.now())) {
+            if (forcePuch) {
+                //Does not change the time for next force puch
+                log("Manual force pusch");
+                comepetition = comeptitionTemp;
+                clubs = clubsTemp;
+                sendPostTävling(serverSokvag, comepetition, competitionName);
+            } else if ((comepetition.equalsIgnoreCase(comeptitionTemp) && clubs.equalsIgnoreCase(clubsTemp)) && nextForcePush.isAfter(LocalDateTime.now())) {
                 log("The data is identical ignore push and waits for next time (next force pusch is " + nextForcePush + "");
                 System.out.println("comepetition: " + comepetition);
             } else {
@@ -55,7 +61,10 @@ public class PushController {
             e.printStackTrace();
             return pushStatus.UNKNOWN_ERROR;
         }
-        log("Automatiskt puschat tävlingen (" + LocalDateTime.now().format(formatter) + ")");
+        if (forcePuch)
+            log("Puschat tävlingen (" + LocalDateTime.now().format(formatter) + ")");
+        else
+            log("Automatiskt puschat tävlingen (" + LocalDateTime.now().format(formatter) + ")");
         return pushStatus.SUCCESSFULLY;
 //		if(competitionName.getText().isEmpty()){
 //			showAlertInformation("Error", "\"Competition name\" måstet vara ifyllt.", "\"Competition name\" måstet vara ifyllt. Fyll i och försök igen.");
@@ -96,7 +105,7 @@ public class PushController {
         log("Response info : " + feedback.getMessage());
     }
 
-    private void log(String message){
+    private void log(String message) {
         logger.logToGui(message);
     }
 }

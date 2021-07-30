@@ -64,7 +64,7 @@
                 </HBox>
                 <HBox prefHeight="30.0" prefWidth="580.0">
                     <children>
-                        <Button fx:id="readDatabase" disable="true" mnemonicParsing="false" onAction="#readDatabase" text="läs in databas">
+                        <Button fx:id="readDatabase" disable="true" mnemonicParsing="false" onAction="#readAndForcePuchDatabase" text="Läs in och pucha databas">
                             <HBox.margin>
                                 <Insets right="10.0" />
                             </HBox.margin>

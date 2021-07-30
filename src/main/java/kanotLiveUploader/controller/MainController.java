@@ -104,7 +104,7 @@ public class MainController implements GuiLogger {
                 if (runLoop) {
                     System.out.println("Running: " + new java.util.Date());
                     readDatabase();
-                    pushDatabase();
+                    pushDatabase(false);
                     Date executionTime = new Date(this.scheduledExecutionTime() + finalTimeBetweenExecution);
                     Platform.runLater(() -> {
                         status.setText("Klar, nästa läsning och push är: " + DATE_FORMAT.format(executionTime));
@@ -114,8 +114,8 @@ public class MainController implements GuiLogger {
         }, 0, timeBetweenExecution);
     }
 
-    private void pushDatabase() {
-        pushController.pushCompetition(tävling, url.getText() ,competitionName.getText());
+    private void pushDatabase(boolean forcePuch) {
+        pushController.pushCompetition(tävling, url.getText() ,competitionName.getText(),forcePuch);
     }
 
     @FXML
@@ -162,6 +162,12 @@ public class MainController implements GuiLogger {
 
         readDatabase.setDisable(!enabled);
 
+    }
+
+    @FXML
+    private void readAndForcePuchDatabase() {
+        readDatabase();
+        pushDatabase(true);
     }
 
     @FXML
