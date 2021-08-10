@@ -42,6 +42,7 @@ public class PushController {
                 log("Manual force pusch");
                 comepetition = comeptitionTemp;
                 clubs = clubsTemp;
+                sendPostKlubbar(serverSokvag,clubs);
                 sendPostTävling(serverSokvag, comepetition, competitionName);
             } else if ((comepetition.equalsIgnoreCase(comeptitionTemp) && clubs.equalsIgnoreCase(clubsTemp)) && nextForcePush.isAfter(LocalDateTime.now())) {
                 log("The data is identical ignore push and waits for next time (next force pusch is " + nextForcePush + "");
@@ -50,6 +51,7 @@ public class PushController {
                 nextForcePush = LocalDateTime.now().plusMinutes(10);
                 comepetition = comeptitionTemp;
                 clubs = clubsTemp;
+                sendPostKlubbar(serverSokvag,clubs);
                 sendPostTävling(serverSokvag, comepetition, competitionName);
             }
 
